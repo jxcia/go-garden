@@ -36,7 +36,7 @@ docker run -d --name jaeger \
   -p 9411:9411 \
   jaegertracing/all-in-one:1.33
 ```
-
+## 测试
 ### 二. 启动Gateway（统一api网关）
 
 安装 [脚手架工具](../tools/garden) 执行命令创建网关服务，服务名称为`my-gateway`：
