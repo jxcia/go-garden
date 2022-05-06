@@ -1,16 +1,16 @@
 package core
 
 import (
-	"github.com/panco95/go-garden/core/drives/etcd"
-	"github.com/panco95/go-garden/core/log"
+	"github.com/jxcia/go-garden/core/drives/etcd"
+	"github.com/jxcia/go-garden/core/log"
 )
 
 func (g *Garden) bootstrap(configPath, runtimePath string) {
 	g.cfg.ConfigsPath = configPath
-	g.cfg.RuntimePath = runtimePath
 	g.bootConfig("yml")
 	g.checkConfig()
-	log.Setup(g.cfg.RuntimePath, g.cfg.Service.Debug)
+	g.cfg.RuntimePath = g.cfg.Service.LogPath //todo 后期去掉
+	log.Setup(g.cfg.Service.LogPath, g.cfg.Service.ServiceName, g.cfg.Service.Debug)
 	log.Info("bootstrap", g.cfg.Service.ServiceName+" running")
 	g.bootEtcd()
 	g.bootService()

@@ -12,12 +12,12 @@ import (
 
 var logger *zap.SugaredLogger
 
-func Setup(path string, debug bool) {
+func Setup(path, servername string, debug bool) {
 	encoder := getEncoder()
 
 	var cores []zapcore.Core
 
-	writeSyncer := getLogWriter(path)
+	writeSyncer := getLogWriter(path, servername)
 	fileCore := zapcore.NewCore(encoder, writeSyncer, zapcore.InfoLevel)
 	cores = append(cores, fileCore)
 
@@ -49,9 +49,10 @@ func getEncoder() zapcore.Encoder {
 	return zapcore.NewJSONEncoder(encoderConfig)
 }
 
-func getLogWriter(runtimePath string) zapcore.WriteSyncer {
+//todo 调整日志切割方案
+func getLogWriter(runtimePath, servername string) zapcore.WriteSyncer {
 	lumberJackLogger := &lumberjack.Logger{
-		Filename:   runtimePath + "/garden.log",
+		Filename:   runtimePath + "/" + servername + ".log",
 		MaxSize:    2,
 		MaxBackups: 10000,
 		MaxAge:     0,

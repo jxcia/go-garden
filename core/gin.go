@@ -13,8 +13,8 @@ import (
 
 	"github.com/gin-contrib/pprof"
 	"github.com/gin-gonic/gin"
+	"github.com/jxcia/go-garden/core/log"
 	"github.com/opentracing/opentracing-go"
-	"github.com/panco95/go-garden/core/log"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 

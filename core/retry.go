@@ -9,8 +9,8 @@ import (
 	"sync/atomic"
 	"time"
 
+	"github.com/jxcia/go-garden/core/log"
 	"github.com/opentracing/opentracing-go"
-	"github.com/panco95/go-garden/core/log"
 )
 
 func retryAnalyze(retry string) ([]int, error) {

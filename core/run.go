@@ -2,7 +2,7 @@ package core
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/panco95/go-garden/core/log"
+	"github.com/jxcia/go-garden/core/log"
 )
 
 // Run service start

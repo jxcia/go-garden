@@ -9,8 +9,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/jxcia/go-garden/core/log"
 	"github.com/opentracing/opentracing-go"
-	"github.com/panco95/go-garden/core/log"
 )
 
 // Request datatype
@@ -95,7 +95,8 @@ func (g *Garden) requestServiceHttp(span opentracing.Span, url string, request *
 		r.Header.Add(k, v.(string))
 	}
 	// Add the body format header
-	r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	//debug 去掉format header
+	//r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	// Increase calls to the downstream service security validation key
 	r.Header.Set("Call-Key", g.cfg.Service.CallKey)
 

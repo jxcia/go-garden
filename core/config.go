@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/fsnotify/fsnotify"
-	"github.com/panco95/go-garden/core/log"
+	"github.com/jxcia/go-garden/core/log"
 	"github.com/spf13/viper"
 )
 
@@ -34,6 +34,7 @@ type serviceCfg struct {
 	ZipkinAddress      string
 	JaegerAddress      string
 	PushGatewayAddress string
+	LogPath            string
 }
 
 type cfg struct {

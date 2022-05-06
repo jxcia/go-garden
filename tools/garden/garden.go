@@ -125,7 +125,7 @@ func sysCmd(name string, command string, param ...string) {
 }
 
 func gatewayMain(serviceName string) string {
-	return strings.Replace("package main\n\nimport (\n\t\"github.com/panco95/go-garden/core\"\n\t\"<>/auth\"\n\t\"<>/global\"\n\t\"<>/rpc\"\n)\n\nfunc main() {\n\tglobal.Garden = core.New()\n\tglobal.Garden.Run(global.Garden.GatewayRoute, new(rpc.Rpc), auth.Auth)\n}\n", "<>", serviceName, 999)
+	return strings.Replace("package main\n\nimport (\n\t\"github.com/jxcia/go-garden/core\"\n\t\"<>/auth\"\n\t\"<>/global\"\n\t\"<>/rpc\"\n)\n\nfunc main() {\n\tglobal.Garden = core.New()\n\tglobal.Garden.Run(global.Garden.GatewayRoute, new(rpc.Rpc), auth.Auth)\n}\n", "<>", serviceName, 999)
 }
 
 func gatewayAuth() string {
@@ -133,7 +133,7 @@ func gatewayAuth() string {
 }
 
 func configsYml(serviceName, httpOut string) string {
-	return strings.Replace("service:\n  debug: true\n  serviceName: <>\n  #serviceIp: 127.0.0.1\n  httpOut: "+httpOut+"\n  httpPort: 8080\n  allowCors: true\n  rpcOut: false\n  rpcPort: 9000\n  callKey: garden\n  callRetry: 20/30/50\n  etcdKey: garden\n  etcdAddress:\n    - 127.0.0.1:2379\n  tracerDrive: jaeger\n  jaegerAddress: 127.0.0.1:6831\n  #zipkinAddress: http://127.0.0.1:9411/api/v2/spans\n  #pushGatewayAddress: 127.0.0.1:9091\n", "<>", serviceName, 999)
+	return strings.Replace("service:\n  debug: true\n  serviceName: <>\n  #serviceIp: 127.0.0.1\n  httpOut: "+httpOut+"\n  httpPort: 8080\n  allowCors: true\n  rpcOut: false\n  rpcPort: 9000\n  callKey: garden\n  callRetry: 20/30/50\n  etcdKey: garden\n  etcdAddress:\n    - 127.0.0.1:2379\n  tracerDrive: jaeger\n  jaegerAddress: 127.0.0.1:6831\n  #zipkinAddress: http://127.0.0.1:9411/api/v2/spans\n  #pushGatewayAddress: 127.0.0.1:9091\n   #logpath: .\\ \n", "<>", serviceName, 999)
 }
 
 func serviceRoutesYml(serviceName string) string {
@@ -145,15 +145,15 @@ func gatewayRoutesYml() string {
 }
 
 func globalGo() string {
-	return "package global\n\nimport \"github.com/panco95/go-garden/core\"\n\nvar (\n\tGarden *core.Garden\n)\n"
+	return "package global\n\nimport \"github.com/jxcia/go-garden/core\"\n\nvar (\n\tGarden *core.Garden\n)\n"
 }
 
 func gatewayRpcBase() string {
-	return "package rpc\n\nimport \"github.com/panco95/go-garden/core\"\n\ntype Rpc struct {\n\tcore.Rpc\n}\n"
+	return "package rpc\n\nimport \"github.com/jxcia/go-garden/core\"\n\ntype Rpc struct {\n\tcore.Rpc\n}\n"
 }
 
 func serviceMain(serviceName string) string {
-	return strings.Replace("package main\n\nimport (\n\t\"github.com/panco95/go-garden/core\"\n\t\"<>/api\"\n\t\"<>/global\"\n\t\"<>/rpc\"\n)\n\nfunc main() {\n\tglobal.Garden = core.New()\n\tglobal.Garden.Run(api.Routes, new(rpc.Rpc), global.Garden.CheckCallSafeMiddleware)\n}\n", "<>", serviceName, 999)
+	return strings.Replace("package main\n\nimport (\n\t\"github.com/jxcia/go-garden/core\"\n\t\"<>/api\"\n\t\"<>/global\"\n\t\"<>/rpc\"\n)\n\nfunc main() {\n\tglobal.Garden = core.New()\n\tglobal.Garden.Run(api.Routes, new(rpc.Rpc), global.Garden.CheckCallSafeMiddleware)\n}\n", "<>", serviceName, 999)
 }
 
 func rpcDefineTest() string {
@@ -161,11 +161,11 @@ func rpcDefineTest() string {
 }
 
 func rpcBase() string {
-	return "package rpc\n\nimport \"github.com/panco95/go-garden/core\"\n\ntype Rpc struct {\n\tcore.Rpc\n}\n"
+	return "package rpc\n\nimport \"github.com/jxcia/go-garden/core\"\n\ntype Rpc struct {\n\tcore.Rpc\n}\n"
 }
 
 func rpcTest(serviceName string) string {
-	return strings.Replace("package rpc\n\nimport (\n\t\"context\"\n\t\"github.com/panco95/go-garden/core/log\"\n\t\"<>/global\"\n\t\"<>/rpc/define\"\n)\n\nfunc (r *Rpc) Testrpc(ctx context.Context, args *define.TestrpcArgs, reply *define.TestrpcReply) error {\n\tspan := global.Garden.StartRpcTrace(ctx, args, \"testrpc\")\n\n\tlog.Info(\"Test\", \"Receive a rpc message\")\n\treply.Pong = \"pong\"\n\n\tglobal.Garden.FinishRpcTrace(span)\n\treturn nil\n}\n", "<>", serviceName, 999)
+	return strings.Replace("package rpc\n\nimport (\n\t\"context\"\n\t\"github.com/jxcia/go-garden/core/log\"\n\t\"<>/global\"\n\t\"<>/rpc/define\"\n)\n\nfunc (r *Rpc) Testrpc(ctx context.Context, args *define.TestrpcArgs, reply *define.TestrpcReply) error {\n\tspan := global.Garden.StartRpcTrace(ctx, args, \"testrpc\")\n\n\tlog.Info(\"Test\", \"Receive a rpc message\")\n\treply.Pong = \"pong\"\n\n\tglobal.Garden.FinishRpcTrace(span)\n\treturn nil\n}\n", "<>", serviceName, 999)
 }
 
 func apiRoutes() string {
@@ -173,9 +173,9 @@ func apiRoutes() string {
 }
 
 func apiTest(serviceName string) string {
-	return strings.Replace("package api\n\nimport (\n\t\"github.com/gin-gonic/gin\"\n\t\"github.com/panco95/go-garden/core\"\n\t\"github.com/panco95/go-garden/core/log\"\n\t\"<>/global\"\n\t\"<>/rpc/define\"\n)\n\nfunc Test(c *gin.Context) {\n\tspan := core.GetSpan(c)\n\n\t// rpc call test\n\targs := define.TestrpcArgs{\n\t\tPing: \"ping\",\n\t}\n\treply := define.TestrpcReply{}\n\terr := global.Garden.CallRpc(span, \"<>\", \"testrpc\", &args, &reply)\n\tif err != nil {\n\t\tlog.Error(\"rpcCall\", err)\n\t\tspan.SetTag(\"CallService\", err)\n\t\tFail(c, MsgFail)\n\t\treturn\n\t}\n\n\tSuccess(c, MsgOk, core.MapData{\n\t\t\"pong\": reply.Pong,\n\t})\n}\n", "<>", serviceName, 999)
+	return strings.Replace("package api\n\nimport (\n\t\"github.com/gin-gonic/gin\"\n\t\"github.com/jxcia/go-garden/core\"\n\t\"github.com/jxcia/go-garden/core/log\"\n\t\"<>/global\"\n\t\"<>/rpc/define\"\n)\n\nfunc Test(c *gin.Context) {\n\tspan := core.GetSpan(c)\n\n\t// rpc call test\n\targs := define.TestrpcArgs{\n\t\tPing: \"ping\",\n\t}\n\treply := define.TestrpcReply{}\n\terr := global.Garden.CallRpc(span, \"<>\", \"testrpc\", &args, &reply)\n\tif err != nil {\n\t\tlog.Error(\"rpcCall\", err)\n\t\tspan.SetTag(\"CallService\", err)\n\t\tFail(c, MsgFail)\n\t\treturn\n\t}\n\n\tSuccess(c, MsgOk, core.MapData{\n\t\t\"pong\": reply.Pong,\n\t})\n}\n", "<>", serviceName, 999)
 }
 
 func apiDefine() string {
-	return "package api\n\nimport (\n\t\"github.com/gin-gonic/gin\"\n\t\"github.com/panco95/go-garden/core\"\n)\n\nconst (\n\tCodeOk   = 1000\n\tCodeFail = 1001\n\n\tMsgOk            = \"Success\"\n\tMsgFail          = \"Server error\"\n\tMsgInvalidParams = \"Invalid params\"\n)\n\nfunc Success(c *gin.Context, msg string, data core.MapData) {\n\tc.JSON(200, core.MapData{\n\t\t\"code\": CodeOk,\n\t\t\"msg\":  msg,\n\t\t\"data\": data,\n\t})\n}\n\nfunc Fail(c *gin.Context, msg string) {\n\tc.JSON(200, core.MapData{\n\t\t\"code\": CodeFail,\n\t\t\"msg\":  msg,\n\t\t\"data\": nil,\n\t})\n}\n"
+	return "package api\n\nimport (\n\t\"github.com/gin-gonic/gin\"\n\t\"github.com/jxcia/go-garden/core\"\n)\n\nconst (\n\tCodeOk   = 1000\n\tCodeFail = 1001\n\n\tMsgOk            = \"Success\"\n\tMsgFail          = \"Server error\"\n\tMsgInvalidParams = \"Invalid params\"\n)\n\nfunc Success(c *gin.Context, msg string, data core.MapData) {\n\tc.JSON(200, core.MapData{\n\t\t\"code\": CodeOk,\n\t\t\"msg\":  msg,\n\t\t\"data\": data,\n\t})\n}\n\nfunc Fail(c *gin.Context, msg string) {\n\tc.JSON(200, core.MapData{\n\t\t\"code\": CodeFail,\n\t\t\"msg\":  msg,\n\t\t\"data\": nil,\n\t})\n}\n"
 }

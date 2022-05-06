@@ -5,7 +5,7 @@ import (
 	"context"
 	"strings"
 
-	"github.com/panco95/go-garden/core/log"
+	"github.com/jxcia/go-garden/core/log"
 )
 
 type Rpc int
