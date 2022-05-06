@@ -6,11 +6,11 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/jxcia/go-garden/core/log"
 	"github.com/opentracing/opentracing-go"
 	zkOt "github.com/openzipkin-contrib/zipkin-go-opentracing"
 	"github.com/openzipkin/zipkin-go"
 	zkHttp "github.com/openzipkin/zipkin-go/reporter/http"
-	"github.com/panco95/go-garden/core/log"
 	"github.com/uber/jaeger-client-go"
 	jaegerCfg "github.com/uber/jaeger-client-go/config"
 	"github.com/uber/jaeger-client-go/log/zap"
