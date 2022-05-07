@@ -92,12 +92,10 @@ func (g *Garden) requestServiceHttp(span opentracing.Span, url string, request *
 
 	// New request request
 	for k, v := range request.Headers {
-		fmt.Println(k, v.(string)) //debug
 		r.Header.Add(k, v.(string))
 	}
 	// Add the body format header
-	//r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	r.Header.Set("Content-Type", "application/json")
+	//	r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	// Increase calls to the downstream service security validation key
 	r.Header.Set("Call-Key", g.cfg.Service.CallKey)
 

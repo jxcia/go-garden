@@ -27,7 +27,7 @@ func (g *Garden) ginListen(listenAddress string, route func(r *gin.Engine), auth
 		if err := createDir(g.cfg.RuntimePath); err != nil {
 			return err
 		}
-		file, err := os.Create(fmt.Sprintf("%s/gin.log", g.cfg.RuntimePath))
+		file, err := os.Create(fmt.Sprintf("%s/%s-access.log", g.cfg.RuntimePath, g.cfg.Service.ServiceName))
 		if err != nil {
 			return err
 		}
@@ -109,20 +109,21 @@ func (g *Garden) openTracingMiddleware() gin.HandlerFunc {
 		span.SetTag("ServiceIp", g.GetServiceIp())
 		span.SetTag("ServiceId", g.GetServiceId())
 		span.SetTag("Status", "unfinished")
-
+		//	newbody := getBody(c)
 		request := req{
 			getMethod(c),
 			getUrl(c),
 			getUrlParam(c),
 			getClientIp(c),
 			getHeaders(c),
-			getBody(c)}
+			nil}
 		s, _ := json.Marshal(&request)
+		//	b, _ := json.Marshal(&newbody)
 		span.SetTag("Request", string(s))
-
+		c.Set("tracerid", span.Tracer()) //debug
 		c.Set("span", span)
 		c.Set("request", &request)
-
+		//	c.Request.Body = ioutil.NopCloser(bytes.NewBuffer(b))
 		c.Next()
 
 		span.SetTag("Status", "finished")
