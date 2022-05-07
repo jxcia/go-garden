@@ -32,7 +32,7 @@ func retryAnalyze(retry string) ([]int, error) {
 	return retrySlice, nil
 }
 
-func (g *Garden) retryGo(service, action string, retry []int, nodeIndex int, span opentracing.Span, route routeCfg, request *req, rpcArgs, rpcReply interface{}) (int, string, http.Header, error) {
+func (g *Garden) retryGo(service, action string, retry []int, nodeIndex int, span opentracing.Span, route routeCfg, request *req, body MapData, rpcArgs, rpcReply interface{}) (int, string, http.Header, error) {
 	code := httpOk
 	result := infoSuccess
 	addr := ""
@@ -49,7 +49,7 @@ func (g *Garden) retryGo(service, action string, retry []int, nodeIndex int, spa
 				break
 			}
 			addr = "http://" + addr + route.Path
-			code, result, header, err = g.requestServiceHttp(span, addr, request, route.Timeout)
+			code, result, header, err = g.requestServiceHttp(span, addr, request, body, route.Timeout)
 		} else if route.Type == "rpc" {
 			addr, err = g.getServiceRpcAddr(service, nodeIndex)
 			if err != nil {

@@ -1,15 +1,16 @@
 package core
 
 import (
+	"bytes"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 	"strconv"
-	"strings"
 	"time"
 
-	"github.com/jxcia/go-garden/core/log"
+	log "github.com/jxcia/go-garden/core/log"
 	"github.com/opentracing/opentracing-go"
 )
 
@@ -23,7 +24,7 @@ type req struct {
 	Body     MapData `json:"body"`
 }
 
-func (g *Garden) callService(span opentracing.Span, service, action string, request *req, args, reply interface{}) (int, string, http.Header, error) {
+func (g *Garden) callService(span opentracing.Span, service, action string, request *req, body MapData, args, reply interface{}) (int, string, http.Header, error) {
 	s := g.cfg.Routes[service]
 	if len(s) == 0 {
 		return httpNotFound, infoNotFound, nil, errors.New("service not found")
@@ -69,23 +70,25 @@ func (g *Garden) callService(span opentracing.Span, service, action string, requ
 		retry = []int{0}
 	}
 
-	code, result, header, err := g.retryGo(service, action, retry, nodeIndex, span, route, request, args, reply)
+	code, result, header, err := g.retryGo(service, action, retry, nodeIndex, span, route, request, body, args, reply)
 
 	return code, result, header, err
 }
 
-func (g *Garden) requestServiceHttp(span opentracing.Span, url string, request *req, timeout int) (int, string, http.Header, error) {
+func (g *Garden) requestServiceHttp(span opentracing.Span, url string, request *req, body MapData, timeout int) (int, string, http.Header, error) {
 	client := &http.Client{
 		Timeout: time.Millisecond * time.Duration(timeout),
 	}
 
 	// encapsulation request body
-	var s string
-	for k, v := range request.Body {
-		s += fmt.Sprintf("%v=%v&", k, v)
-	}
-	s = strings.Trim(s, "&")
-	r, err := http.NewRequest(request.Method, url, strings.NewReader(s))
+	//var s string
+	// debug
+	//for k, v := range body {
+	//	s += fmt.Sprintf("%v=%v&", k, v)
+	//}
+	//s = strings.Trim(s, "&")
+	s, _ := json.Marshal(&body)
+	r, err := http.NewRequest(request.Method, url, bytes.NewReader(s))
 	if err != nil {
 		return httpFail, "", nil, err
 	}
@@ -95,10 +98,15 @@ func (g *Garden) requestServiceHttp(span opentracing.Span, url string, request *
 		r.Header.Add(k, v.(string))
 	}
 	// Add the body format header
+	ct := fmt.Sprint(request.Headers["Content-Type"])
+	r.Header.Set("Content-Type", ct)
 	//	r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	// Increase calls to the downstream service security validation key
 	r.Header.Set("Call-Key", g.cfg.Service.CallKey)
-
+	//debug
+	log.Info("debug", request.Headers)
+	log.Info("debug", body)
+	log.Info("debug", request)
 	// add request opentracing span header
 	opentracing.GlobalTracer().Inject(
 		span.Context(),
@@ -124,7 +132,7 @@ func (g *Garden) requestServiceHttp(span opentracing.Span, url string, request *
 
 // CallRpc call other service rpc method
 func (g *Garden) CallRpc(span opentracing.Span, service, action string, args, reply interface{}) error {
-	_, _, _, err := g.callService(span, service, action, nil, &args, &reply)
+	_, _, _, err := g.callService(span, service, action, nil, nil, &args, &reply)
 	if err != nil {
 		return err
 	}

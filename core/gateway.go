@@ -12,12 +12,13 @@ func (g *Garden) gateway(c *gin.Context) {
 	span := GetSpan(c)
 	// get request datatype
 	request := GetRequest(c)
-
+	//debug
+	body := getBody(c)
 	service := c.Param("service")
 	action := c.Param("action")
 
 	// request service
-	code, data, header, err := g.callService(span, service, action, request, nil, nil)
+	code, data, header, err := g.callService(span, service, action, request, body, nil, nil)
 	if err != nil {
 		c.JSON(code, gatewayFail(data))
 		log.Error("callService", err)
