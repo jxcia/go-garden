@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"strconv"
@@ -98,15 +97,11 @@ func (g *Garden) requestServiceHttp(span opentracing.Span, url string, request *
 		r.Header.Add(k, v.(string))
 	}
 	// Add the body format header
-	ct := fmt.Sprint(request.Headers["Content-Type"])
-	r.Header.Set("Content-Type", ct)
+	//ct := fmt.Sprint(request.Headers["Content-Type"])
+	//r.Header.Set("Content-Type", ct)
 	//	r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	// Increase calls to the downstream service security validation key
 	r.Header.Set("Call-Key", g.cfg.Service.CallKey)
-	//debug
-	log.Info("debug", request.Headers)
-	log.Info("debug", body)
-	log.Info("debug", request)
 	// add request opentracing span header
 	opentracing.GlobalTracer().Inject(
 		span.Context(),
