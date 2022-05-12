@@ -23,6 +23,24 @@ type req struct {
 	Body     MapData `json:"body"`
 }
 
+// api 路由单独处理
+func (g *Garden) callServiceapi(span opentracing.Span, service, action string, request *req, body MapData, args, reply interface{}) (int, string, http.Header, error) {
+	s := g.cfg.Routes[service]
+	if len(s) == 0 {
+		return httpNotFound, infoNotFound, nil, errors.New("service not found")
+	}
+	route := s["api"]
+
+	_, nodeIndex, err := g.selectService(service)
+	if err != nil {
+		return httpNotFound, infoNotFound, nil, err
+	}
+
+	code, result, header, err := g.retryGoapi(service, action, nodeIndex, span, route, request, body, args, reply)
+
+	return code, result, header, err
+}
+
 func (g *Garden) callService(span opentracing.Span, service, action string, request *req, body MapData, args, reply interface{}) (int, string, http.Header, error) {
 	s := g.cfg.Routes[service]
 	if len(s) == 0 {
@@ -79,13 +97,6 @@ func (g *Garden) requestServiceHttp(span opentracing.Span, url string, request *
 		Timeout: time.Millisecond * time.Duration(timeout),
 	}
 
-	// encapsulation request body
-	//var s string
-	// debug
-	//for k, v := range body {
-	//	s += fmt.Sprintf("%v=%v&", k, v)
-	//}
-	//s = strings.Trim(s, "&")
 	s, _ := json.Marshal(&body)
 	r, err := http.NewRequest(request.Method, url, bytes.NewReader(s))
 	if err != nil {
@@ -96,10 +107,7 @@ func (g *Garden) requestServiceHttp(span opentracing.Span, url string, request *
 	for k, v := range request.Headers {
 		r.Header.Add(k, v.(string))
 	}
-	// Add the body format header
-	//ct := fmt.Sprint(request.Headers["Content-Type"])
-	//r.Header.Set("Content-Type", ct)
-	//	r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
 	// Increase calls to the downstream service security validation key
 	r.Header.Set("Call-Key", g.cfg.Service.CallKey)
 	// add request opentracing span header

@@ -67,7 +67,7 @@ func (g *Garden) ginListen(listenAddress string, route func(r *gin.Engine), auth
 // GatewayRoute create gateway service type to use this
 func (g *Garden) GatewayRoute(r *gin.Engine) {
 	g.serviceType = 1
-	r.Any("api/:service/:action", func(c *gin.Context) {
+	r.Any("api/:service/*action", func(c *gin.Context) {
 		g.gateway(c)
 	})
 }

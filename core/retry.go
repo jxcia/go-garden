@@ -94,3 +94,44 @@ func (g *Garden) retryGo(service, action string, retry []int, nodeIndex int, spa
 
 	return code, result, header, err
 }
+
+func (g *Garden) retryGoapi(service, action string, nodeIndex int, span opentracing.Span, route routeCfg, request *req, body MapData, rpcArgs, rpcReply interface{}) (int, string, http.Header, error) {
+
+	code := httpOk
+	result := infoSuccess
+	addr := ""
+	var err error
+	var header http.Header
+
+	atomic.AddInt64(&g.services[service].Nodes[nodeIndex].Waiting, 1)
+
+	addr, err = g.getServiceHttpAddr(service, nodeIndex)
+	if err != nil {
+		code = httpFail
+		return code, infoNotFound, nil, err
+	}
+	addr = "http://" + addr + action
+	code, result, header, err = g.requestServiceHttp(span, addr, request, body, route.Timeout)
+
+	atomic.AddInt64(&g.services[service].Nodes[nodeIndex].Waiting, -1)
+
+	if err != nil {
+		log.Error("callService", err)
+		g.addFusingQuantity(g.services[service].Nodes[nodeIndex].Addr + "/" + service + "/" + action)
+
+		// call timeout don't retry
+		if strings.Contains(err.Error(), "Timeout") || strings.Contains(err.Error(), "deadline") {
+			err = errors.New(fmt.Sprintf("Call %s %s %s timeout", route.Type, service, action))
+			return code, infoTimeout, nil, err
+		}
+
+		// call 404 don't retry
+		if code == httpNotFound {
+			return code, infoNotFound, nil, err
+		}
+	}
+
+	atomic.AddInt64(&g.services[service].Nodes[nodeIndex].Finish, 1)
+
+	return code, result, header, err
+}
